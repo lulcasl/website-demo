@@ -44,7 +44,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
     <!-- Chosen Palette: Warm Neutral (Slate/Gray) with Amber/Orange Accents for Power BI branding feel -->
-    <!-- Application Structure Plan: Dashboard style. Includes a "File Generator" engine in JS to create CSVs on the fly, solving the broken link issue permanently. -->
+    <!-- Application Structure Plan: Dashboard style. Updated to use external PLACEHOLDER URLs for file downloads. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 </head>
 <body class="min-h-screen flex flex-col">
@@ -187,9 +187,9 @@
                         <div class="bg-white p-4 rounded border border-gray-200 shadow-sm">
                             <h4 class="font-bold text-gray-800 mb-3 flex items-center">
                                 <span>📂 Arquivos da Aula</span>
-                                <span class="ml-2 text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">Gerados Localmente</span>
+                                <span class="ml-2 text-xs font-normal text-gray-500 bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Download Externo</span>
                             </h4>
-                            <p class="text-xs text-gray-500 mb-4">Clique abaixo para baixar os arquivos CSV/Excel necessários para este exercício. Estes arquivos são gerados instantaneamente pelo navegador.</p>
+                            <p class="text-xs text-gray-500 mb-4">Clique nos botões abaixo para acessar os arquivos base hospedados no servidor.</p>
                             
                             <div id="file-downloads-container" class="space-y-3">
                                 <!-- Buttons injected via JS -->
@@ -205,91 +205,63 @@
     <!-- Footer -->
     <footer class="bg-gray-800 text-white mt-auto py-8">
         <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-sm text-gray-400">Plano de Curso Power BI • Arquivos Gerados Automaticamente para Garantia de Acesso</p>
+            <p class="text-sm text-gray-400">Plano de Curso Power BI • Arquivos Hospedados Externamente</p>
         </div>
     </footer>
 
     <!-- Application Logic -->
     <script>
-        // --- HELPER: FILE GENERATOR ---
-        function downloadFile(filename, content) {
-            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            if (link.download !== undefined) {
-                const url = URL.createObjectURL(blob);
-                link.setAttribute("href", url);
-                link.setAttribute("download", filename);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        }
+        
+        // ====================================================================================
+        // --- CONFIGURAÇÃO DE LINKS (LINKS PLACEHOLDER) ---
+        // EDITE AS PROPRIEDADES 'url' ABAIXO PARA APONTAR PARA SEUS PRÓPRIOS ARQUIVOS HOSPEDADOS
+        // ====================================================================================
 
-        // --- DATA STORE ---
         const courseData = {
             1: {
                 title: "Aula 1: Introdução e ETL (Power Query)",
                 subtitle: "Conectando e transformando dados brutos em informações úteis.",
                 timeline: [
-                    { time: "00:00 - 00:30", title: "Introdução ao BI e Interface", desc: "O que é BI? Power BI Desktop vs Service. Tour pela interface (Faixa de Opções, Painéis)." },
-                    { time: "00:30 - 01:15", title: "Power Query: O Coração (ETL)", desc: "Extração (Excel, CSV, Web). Transformação: Tipos de dados, Promover cabeçalhos, Remover linhas, Substituir valores." },
-                    { time: "01:15 - 01:45", title: "Tratamento Avançado", desc: "Coluna condicional, Coluna de exemplo, Unpivot (Transformar colunas em linhas), Tratamento de erros." },
+                    { time: "00:00 - 00:30", title: "Introdução ao BI e Interface", desc: "O que é BI? Power BI Desktop vs Service. Tour pela interface." },
+                    { time: "00:30 - 01:15", title: "Power Query: O Coração (ETL)", desc: "Extração (Excel, CSV, Web). Transformação: Tipos de dados, Promover cabeçalhos, Remover linhas." },
+                    { time: "01:15 - 01:45", title: "Tratamento Avançado", desc: "Coluna condicional, Coluna de exemplo, Unpivot, Tratamento de erros." },
                     { time: "01:45 - 02:00", title: "Carregamento e Prática", desc: "Aplicar e Fechar. Verificação dos dados no 'Data View'. Dúvidas." }
                 ],
-                concept: { title: "O Fluxo ETL", type: "etl", desc: "Extração (Extract), Transformação (Transform) e Carga (Load). A base de qualquer projeto de dados." },
+                concept: { title: "O Fluxo ETL", type: "etl", desc: "Extração (Extract), Transformação (Transform) e Carga (Load)." },
                 cases: [
                     {
                         title: "Case A: Limpeza de Vendas Desestruturadas",
                         difficulty: "Iniciante",
                         focus: "Limpeza Básica",
-                        scenario: "Você recebeu um arquivo de vendas exportado de um sistema antigo. O problema é que o arquivo contém linhas vazias no topo, metadados inúteis antes do cabeçalho real, e a data está formatada como texto.",
-                        deliverables: ["Remover as primeiras 3 linhas (lixo)", "Promover a primeira linha como cabeçalho", "Filtrar/Remover linhas nulas", "Converter coluna 'Valor' para Decimal Fixo"],
+                        scenario: "Arquivo exportado de sistema antigo com metadados inúteis no cabeçalho e linhas vazias.",
+                        deliverables: ["Remover linhas de cabeçalho inútil", "Promover cabeçalhos", "Remover nulos", "Tipagem de dados"],
                         files: [
-                            {
-                                name: "Vendas_Jan_Sujo.csv",
-                                content: `Relatório gerado pelo Sistema v1.0
-Usuario: Admin
-Data: 01/01/2023
-
-Data;Produto;Vendedor;Valor_Venda
-01/01/2023;Notebook Dell;João Silva;4500
-02/01/2023;Mouse Logitech;Maria Souza;50
-; ; ;
-03/01/2023;Teclado Mecânico;João Silva;350
-04/01/2023;Monitor 24;Pedro Santos;1200
-; ; ;
-05/01/2023;Cabo HDMI;Maria Souza;25`
-                            }
+                            // --- EDITE O LINK ABAIXO ---
+                            { name: "Vendas_Jan_Sujo.csv", url: "https://seusite.com/arquivos/aula1/Vendas_Jan_Sujo.csv" }
                         ]
                     },
                     {
                         title: "Case B: Unificação de Arquivos (Append)",
                         difficulty: "Intermediário",
                         focus: "Append (Acrescentar)",
-                        scenario: "O departamento financeiro salva as vendas em arquivos mensais separados. Para analisar o trimestre, você precisa juntar todos em uma única tabela no Power BI.",
-                        deliverables: ["Importar os 3 arquivos CSV individualmente", "Usar a função 'Acrescentar Consultas' (Append)", "Verificar se o total de linhas bate com a soma dos arquivos"],
+                        scenario: "Unificar 3 arquivos mensais separados (Jan, Fev, Mar) em uma única tabela histórica.",
+                        deliverables: ["Importar arquivos", "Usar 'Append Queries'", "Verificar total de linhas"],
                         files: [
-                            { name: "Vendas_Jan.csv", content: "Data,Produto,Valor\n2023-01-10,Produto A,100\n2023-01-15,Produto B,200" },
-                            { name: "Vendas_Fev.csv", content: "Data,Produto,Valor\n2023-02-05,Produto A,110\n2023-02-20,Produto C,300" },
-                            { name: "Vendas_Mar.csv", content: "Data,Produto,Valor\n2023-03-01,Produto B,210\n2023-03-12,Produto A,105" }
+                            // --- EDITE OS LINKS ABAIXO ---
+                            { name: "Vendas_Jan.csv", url: "https://seusite.com/arquivos/aula1/Vendas_Jan.csv" },
+                            { name: "Vendas_Fev.csv", url: "https://seusite.com/arquivos/aula1/Vendas_Fev.csv" },
+                            { name: "Vendas_Mar.csv", url: "https://seusite.com/arquivos/aula1/Vendas_Mar.csv" }
                         ]
                     },
                     {
                         title: "Case C: Normalização (Unpivot)",
                         difficulty: "Desafiador",
                         focus: "Unpivot (Desdinamizar)",
-                        scenario: "O RH enviou uma pesquisa de clima onde cada mês é uma coluna diferente. Esse formato 'largo' (wide) impede a criação de gráficos de evolução temporal corretos.",
-                        deliverables: ["Importar a tabela", "Selecionar colunas Jan a Jun", "Aplicar 'Desdinamizar Colunas' (Unpivot)", "Renomear colunas para 'Mês' e 'Nota'"],
+                        scenario: "Pesquisa de RH com colunas de meses (formato largo). Transformar para formato tabular.",
+                        deliverables: ["Importar tabela", "Aplicar Unpivot nas colunas de data", "Renomear Atributo/Valor"],
                         files: [
-                            {
-                                name: "Pesquisa_Clima_RH.csv",
-                                content: `Funcionario,Departamento,Jan,Fev,Mar,Abr,Mai,Jun
-Carlos Silva,TI,8,9,7,8,9,8
-Ana Costa,RH,10,10,9,10,10,10
-Pedro Lima,Vendas,5,6,5,4,5,6
-Julia Dias,Marketing,9,9,8,9,8,9`
-                            }
+                            // --- EDITE O LINK ABAIXO ---
+                            { name: "Pesquisa_Clima_RH.csv", url: "https://seusite.com/arquivos/aula1/Pesquisa_Clima_RH.csv" }
                         ]
                     }
                 ]
@@ -298,43 +270,44 @@ Julia Dias,Marketing,9,9,8,9,8,9`
                 title: "Aula 2: Modelagem de Dados",
                 subtitle: "O segredo da performance: Relacionamentos e Star Schema.",
                 timeline: [
-                    { time: "00:00 - 00:40", title: "Conceito de Modelagem", desc: "Tabelas Fato vs Tabelas Dimensão. O Star Schema. Por que não usar tabelão único?" },
-                    { time: "00:40 - 01:10", title: "Relacionamentos", desc: "Cardinalidade (1:*, *:1). Direção do filtro. Criando relacionamentos manuais arrastando campos." },
-                    { time: "01:10 - 01:40", title: "Introdução ao DAX", desc: "Medidas vs Colunas Calculadas. Funções básicas: SUM, AVERAGE, COUNTROWS, RELATED." },
-                    { time: "01:40 - 02:00", title: "Tabela Calendário", desc: "Importância de uma dCalendar. Criando uma tabela calendário simples com DAX." }
+                    { time: "00:00 - 00:40", title: "Conceito de Modelagem", desc: "Tabelas Fato vs Dimensão. Star Schema." },
+                    { time: "00:40 - 01:10", title: "Relacionamentos", desc: "Cardinalidade (1:*, *:1). Direção do filtro." },
+                    { time: "01:10 - 01:40", title: "Introdução ao DAX", desc: "Medidas vs Colunas. Funções: SUM, AVERAGE, RELATED." },
+                    { time: "01:40 - 02:00", title: "Tabela Calendário", desc: "Criando uma tabela calendário simples com DAX." }
                 ],
-                concept: { title: "Star Schema (Esquema Estrela)", type: "star", desc: "O modelo ideal para Power BI: Uma tabela Fato central (eventos) cercada por tabelas Dimensão (contexto)." },
+                concept: { title: "Star Schema", type: "star", desc: "Fato central cercada por Dimensões." },
                 cases: [
                     {
                         title: "Case A: Construindo o Star Schema",
                         difficulty: "Essencial",
-                        focus: "Modelagem & Relacionamento",
-                        scenario: "Você tem vendas registradas apenas com IDs. Para saber o nome do produto ou do cliente, você precisa conectar as tabelas dimensão.",
-                        deliverables: ["Carregar as 3 tabelas", "Modelar: Ligar ID_Produto (Fato) com ID_Produto (Dimensão)", "Modelar: Ligar ID_Cliente (Fato) com ID_Cliente (Dimensão)", "Criar matriz: Nome Cliente x Nome Produto"],
+                        focus: "Modelagem",
+                        scenario: "Vendas registradas apenas com IDs. Conectar com tabelas de Produto e Cliente.",
+                        deliverables: ["Carregar tabelas", "Criar relacionamentos (1:*)", "Validar filtro cruzado"],
                         files: [
-                            { name: "fVendas.csv", content: "ID_Venda,Data,ID_Produto,ID_Cliente,Qtd\n1,2023-01-01,101,500,2\n2,2023-01-02,102,501,1\n3,2023-01-02,101,502,5" },
-                            { name: "dProdutos.csv", content: "ID_Produto,Nome_Produto,Categoria,Preco_Unitario\n101,Mouse,Periféricos,50\n102,Teclado,Periféricos,150\n103,Monitor,Telas,800" },
-                            { name: "dClientes.csv", content: "ID_Cliente,Nome_Cliente,Cidade,Estado\n500,Empresa A,São Paulo,SP\n501,Empresa B,Rio de Janeiro,RJ\n502,Empresa C,Curitiba,PR" }
+                            // --- EDITE OS LINKS ABAIXO ---
+                            { name: "fVendas.csv", url: "https://seusite.com/arquivos/aula2/fVendas.csv" },
+                            { name: "dProdutos.csv", url: "https://seusite.com/arquivos/aula2/dProdutos.csv" },
+                            { name: "dClientes.csv", url: "https://seusite.com/arquivos/aula2/dClientes.csv" }
                         ]
                     },
                     {
                         title: "Case B: DAX Básico e Medidas",
                         difficulty: "Intermediário",
                         focus: "Medidas DAX",
-                        scenario: "O relatório precisa de cálculos que não existem na base. Precisamos calcular o Faturamento Total (Qtd * Preço) e a Média de vendas.",
-                        deliverables: ["Criar Medida: Faturamento = SUMX(fVendas, fVendas[Qtd] * RELATED(dProdutos[Preco_Unitario]))", "Criar Medida: Total Vendas = COUNTROWS(fVendas)", "Criar Medida: Ticket Médio = [Faturamento] / [Total Vendas]"],
+                        scenario: "Calcular Faturamento e Ticket Médio via medidas explícitas.",
+                        deliverables: ["Medida Faturamento (SUMX)", "Medida Qtd Vendas (COUNTROWS)", "Ticket Médio (DIVIDE)"],
                         files: [
-                            { name: "Base_Completa_Aula2.csv", content: "Utilize os arquivos do Case A acima." } // Reuses previous logic description in UI
+                             { name: "Base_Completa_Aula2.zip", url: "https://seusite.com/arquivos/aula2/Base_Completa.zip" }
                         ]
                     },
                     {
                         title: "Case C: Inteligência de Tempo",
                         difficulty: "Avançado",
-                        focus: "dCalendario & CALCULATE",
-                        scenario: "Precisamos comparar as vendas deste mês com o mês anterior (MoM). Para isso, é obrigatório ter uma tabela calendário.",
-                        deliverables: ["Criar dCalendario via DAX: CALENDARAUTO()", "Relacionar dCalendario[Date] com fVendas[Data]", "Criar Medida: Vendas Mes Anterior = CALCULATE([Faturamento], PREVIOUSMONTH(dCalendario[Date]))"],
+                        focus: "dCalendario",
+                        scenario: "Comparação MoM (Month over Month) exigindo tabela calendário.",
+                        deliverables: ["Criar dCalendario (DAX)", "Relacionar com Fato", "Medida CALCULATE PREVIOUSMONTH"],
                         files: [
-                            { name: "fVendas_Historico.csv", content: "Data,Valor\n2023-01-15,1000\n2023-02-15,1200\n2023-03-15,1500\n2023-04-15,1100" }
+                            { name: "fVendas_Historico.csv", url: "https://seusite.com/arquivos/aula2/fVendas_Historico.csv" }
                         ]
                     }
                 ]
@@ -343,41 +316,42 @@ Julia Dias,Marketing,9,9,8,9,8,9`
                 title: "Aula 3: Visualização & Storytelling",
                 subtitle: "Transformando números em insights visuais impactantes.",
                 timeline: [
-                    { time: "00:00 - 00:30", title: "Princípios de Visualização", desc: "Qual gráfico usar? (Barra vs Linha vs Pizza). Cores e contraste. O conceito 'Z-Pattern' de leitura." },
-                    { time: "00:30 - 01:15", title: "Visuais Nativos e Formatação", desc: "Cartões, Matrizes, Gráficos de Barras, Mapas. Formatação condicional (ícones, barras de dados, cor de fundo)." },
-                    { time: "01:15 - 01:45", title: "Interatividade Avançada", desc: "Filtros (Slicers) vs Painel de Filtros. Edit Interactions (quem filtra quem). Drill-down e Tooltips." },
-                    { time: "01:45 - 02:00", title: "Design e Layout", desc: "Inserir formas, imagens e botões para navegação. Temas JSON. Alinhamento e distribuição." }
+                    { time: "00:00 - 00:30", title: "Princípios de Visualização", desc: "Escolha de gráficos. Cores e contraste." },
+                    { time: "00:30 - 01:15", title: "Visuais Nativos", desc: "Matrizes, Mapas, Barras. Formatação condicional." },
+                    { time: "01:15 - 01:45", title: "Interatividade", desc: "Filtros, Slicers, Drill-down e Tooltips." },
+                    { time: "01:45 - 02:00", title: "Design e Layout", desc: "Menu de navegação, botões, alinhamento." }
                 ],
-                concept: { title: "Escolha do Gráfico", type: "viz", desc: "A escolha errada pode mentir com dados. Aprenda a categorizar: Comparação, Evolução, Composição ou Distribuição." },
+                concept: { title: "Escolha do Gráfico", type: "viz", desc: "Categorias: Comparação, Evolução, Composição, Distribuição." },
                 cases: [
                     {
                         title: "Case A: O Dashboard Executivo",
                         difficulty: "Intermediário",
                         focus: "KPIs e Layout",
-                        scenario: "Use o dataset consolidado abaixo (já tratado) para criar uma tela executiva. O foco é clareza e resposta rápida.",
-                        deliverables: ["3 Cartões no topo: Total Vendas, Qtd Vendida, Total Clientes", "1 Gráfico de Linha: Vendas por Mês", "1 Gráfico de Barras: Top 5 Produtos", "Segmentação de Dados: Ano e Estado"],
+                        scenario: "Criar tela executiva clara e rápida de ler.",
+                        deliverables: ["Cartões (BANs)", "Gráfico de Tendência", "Top 5 Produtos", "Filtros de Ano/Estado"],
                         files: [
-                            { name: "Dataset_Tratado_Consolidado.csv", content: "Data,Produto,Categoria,Cliente,Estado,Valor_Venda\n2023-01-05,Mouse,Periféricos,Empresa A,SP,150\n2023-01-10,Teclado,Periféricos,Empresa B,RJ,300\n2023-02-15,Monitor,Telas,Empresa A,SP,1200\n2023-03-20,Notebook,Computadores,Empresa C,PR,4500\n2023-03-22,Mouse,Periféricos,Empresa A,SP,150" }
+                            // --- EDITE O LINK ABAIXO ---
+                            { name: "Dataset_Consolidado.csv", url: "https://seusite.com/arquivos/aula3/Dataset_Consolidado.csv" }
                         ]
                     },
                     {
                         title: "Case B: Formatação Condicional",
                         difficulty: "Fácil",
-                        focus: "Tabelas e Matrizes",
-                        scenario: "O analista operacional precisa ver linha a linha, mas quer indicadores visuais para identificar problemas rapidamente.",
-                        deliverables: ["Criar Matriz: Estado (Linha) > Cidade (Linha) e Valor (Valor)", "Adicionar Barra de Dados na coluna de valor", "Adicionar ícone vermelho se Valor < 500"],
+                        focus: "Tabelas",
+                        scenario: "Relatório operacional com alertas visuais.",
+                        deliverables: ["Matriz detalhada", "Barra de dados em valores", "Ícones de alerta em KPI negativo"],
                         files: [
-                            { name: "Dataset_Operacional.csv", content: "Utilize o Dataset_Tratado_Consolidado.csv do Case A." }
+                            { name: "Dataset_Operacional.csv", url: "https://seusite.com/arquivos/aula3/Dataset_Operacional.csv" }
                         ]
                     },
                     {
                         title: "Case C: Tooltips Personalizados",
                         difficulty: "Avançado",
-                        focus: "Experiência de Usuário",
-                        scenario: "O mapa mostra as vendas por estado, mas o gerente quer passar o mouse em cima de 'SP' e ver quais produtos foram vendidos lá, sem clicar.",
-                        deliverables: ["Criar página de Tooltip", "Inserir gráfico de barras (Produtos) nessa página", "Configurar o Mapa principal para usar essa página como Dica de Ferramenta"],
+                        focus: "UX",
+                        scenario: "Mostrar detalhes ao passar o mouse sobre o mapa.",
+                        deliverables: ["Página de Tooltip", "Configurar visual do mapa", "Testar interação"],
                         files: [
-                            { name: "Dataset_Mapa.csv", content: "Utilize o Dataset_Tratado_Consolidado.csv do Case A." }
+                            { name: "Dataset_Mapa.csv", url: "https://seusite.com/arquivos/aula3/Dataset_Mapa.csv" }
                         ]
                     }
                 ]
@@ -386,41 +360,42 @@ Julia Dias,Marketing,9,9,8,9,8,9`
                 title: "Aula 4: Publicação & Serviço (Online)",
                 subtitle: "Compartilhando seu trabalho com segurança e automação.",
                 timeline: [
-                    { time: "00:00 - 00:30", title: "Power BI Serviço", desc: "Workspaces (Pessoal vs Compartilhado). Publicando o relatório. Navegação no portal online." },
-                    { time: "00:30 - 01:00", title: "Dashboards vs Relatórios", desc: "A diferença técnica no Serviço. Fixando visuais (Pinning). Alertas de dados." },
-                    { time: "01:00 - 01:30", title: "Atualização de Dados", desc: "Gateway (noções básicas). Agendamento de atualização (Scheduled Refresh). Credenciais." },
-                    { time: "01:30 - 02:00", title: "Segurança e Compartilhamento", desc: "RLS (Row Level Security) básico. Compartilhar link vs App. Exportar para PDF/PPT." }
+                    { time: "00:00 - 00:30", title: "Power BI Serviço", desc: "Workspaces, Publicação, Portal Online." },
+                    { time: "00:30 - 01:00", title: "Dashboards vs Relatórios", desc: "Pinning, Alertas de dados." },
+                    { time: "01:00 - 01:30", title: "Atualização", desc: "Gateway, Agendamento (Refresh)." },
+                    { time: "01:30 - 02:00", title: "Segurança", desc: "RLS (Row Level Security), Compartilhamento." }
                 ],
-                concept: { title: "Fluxo de Publicação", type: "publish", desc: "Do Desktop local para a Nuvem, e da Nuvem para o decisor final." },
+                concept: { title: "Fluxo de Publicação", type: "publish", desc: "Desktop -> Nuvem -> Usuário Final." },
                 cases: [
                     {
                         title: "Case A: Layout Mobile",
                         difficulty: "Fácil",
-                        focus: "Mobile View",
-                        scenario: "O diretor acessa os relatórios via celular. O layout padrão do Desktop fica ilegível em telas verticais.",
-                        deliverables: ["Acessar menu Exibição > Layout Móvel", "Arrastar apenas os cartões principais e 1 gráfico", "Publicar e simular visualização"],
+                        focus: "Mobile",
+                        scenario: "Otimizar relatório para visualização em celular.",
+                        deliverables: ["Configurar Layout Móvel", "Selecionar visuais chave", "Publicar e testar"],
                         files: [
-                            { name: "Projeto_Final.csv", content: "Data,KPI,Valor\n2023-01-01,Faturamento,50000\n2023-01-01,Lucro,12000\n2023-01-02,Faturamento,52000" }
+                            // --- EDITE O LINK ABAIXO ---
+                            { name: "Projeto_Final.pbix", url: "https://seusite.com/arquivos/aula4/Projeto_Final.pbix" }
                         ]
                     },
                     {
                         title: "Case B: Segurança (RLS)",
                         difficulty: "Avançado",
-                        focus: "RLS (Row Level Security)",
-                        scenario: "Você tem um relatório único, mas o Gerente de SP só pode ver dados de SP e o do RJ só pode ver RJ.",
-                        deliverables: ["No Desktop: Modelagem > Gerenciar Funções", "Criar regra DAX: [Estado] = 'SP'", "Testar como função", "Explicar configuração no Serviço"],
+                        focus: "RLS",
+                        scenario: "Restringir acesso a dados por região do gerente.",
+                        deliverables: ["Criar Roles no Desktop", "DAX Filter", "Validar no Serviço"],
                         files: [
-                            { name: "Vendas_Nacional.csv", content: "Gerente,Estado,Vendas\nJoão,SP,5000\nMaria,RJ,4000\nPedro,MG,3000\nJoão,SP,2000" }
+                            { name: "Vendas_Nacional.csv", url: "https://seusite.com/arquivos/aula4/Vendas_Nacional.csv" }
                         ]
                     },
                     {
                         title: "Case C: Alertas de Dados",
                         difficulty: "Fácil",
-                        focus: "Alertas no Serviço",
-                        scenario: "Queremos ser avisados por e-mail automaticamente se as vendas caírem abaixo de um patamar crítico.",
-                        deliverables: ["Publicar relatório", "Criar Dashboard (Painel)", "Fixar cartão", "Gerenciar Alertas: Se valor < 1000 enviar email"],
+                        focus: "Alertas",
+                        scenario: "Receber email se venda cair abaixo da meta.",
+                        deliverables: ["Criar Dashboard no Serviço", "Fixar Cartão", "Configurar Alerta"],
                         files: [
-                            { name: "Dados_Alertas.csv", content: "Data,Venda_Diaria\n01/01,1500\n02/01,800\n03/01,1200" }
+                            { name: "Dados_Alertas.csv", url: "https://seusite.com/arquivos/aula4/Dados_Alertas.csv" }
                         ]
                     }
                 ]
@@ -533,39 +508,29 @@ Julia Dias,Marketing,9,9,8,9,8,9`
                 delivList.innerHTML += `<li>${item}</li>`;
             });
 
-            // GENERATE DOWNLOAD BUTTONS
+            // GENERATE DOWNLOAD BUTTONS (LINKS)
             const filesContainer = document.getElementById('file-downloads-container');
             filesContainer.innerHTML = '';
             
             if (caseData.files && caseData.files.length > 0) {
                 caseData.files.forEach(file => {
-                    // Check if content is a reference string or actual content
-                    if (file.content.startsWith("Utilize")) {
-                        filesContainer.innerHTML += `
-                            <div class="p-3 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600 italic">
-                                ${file.content}
+                    // Create Anchor link styled as button
+                    const link = document.createElement('a');
+                    link.className = "w-full flex items-center justify-between px-4 py-2 bg-white hover:bg-yellow-50 border border-gray-300 hover:border-yellow-400 rounded transition-all group no-underline";
+                    link.href = file.url;
+                    link.target = "_blank"; // Open in new tab/start download
+                    
+                    link.innerHTML = `
+                        <div class="flex items-center">
+                            <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📄</span>
+                            <div class="text-left">
+                                <div class="text-sm font-semibold text-gray-700 group-hover:text-yellow-700">${file.name}</div>
+                                <div class="text-[10px] text-gray-400">Clique para baixar</div>
                             </div>
-                        `;
-                    } else {
-                        // Create button with embedded data
-                        const btn = document.createElement('button');
-                        btn.className = "w-full flex items-center justify-between px-4 py-2 bg-white hover:bg-yellow-50 border border-gray-300 hover:border-yellow-400 rounded transition-all group";
-                        btn.innerHTML = `
-                            <div class="flex items-center">
-                                <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📄</span>
-                                <div class="text-left">
-                                    <div class="text-sm font-semibold text-gray-700 group-hover:text-yellow-700">${file.name}</div>
-                                    <div class="text-[10px] text-gray-400">CSV • Clique para baixar</div>
-                                </div>
-                            </div>
-                            <span class="text-gray-400 group-hover:text-yellow-600">⬇️</span>
-                        `;
-                        // Attach click event dynamically to avoid quote escaping issues
-                        btn.onclick = function() {
-                            downloadFile(file.name, file.content);
-                        };
-                        filesContainer.appendChild(btn);
-                    }
+                        </div>
+                        <span class="text-gray-400 group-hover:text-yellow-600">🔗</span>
+                    `;
+                    filesContainer.appendChild(link);
                 });
             } else {
                  filesContainer.innerHTML = `<div class="text-xs text-gray-400 italic">Nenhum arquivo necessário para este case.</div>`;
