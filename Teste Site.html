@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano de Curso Power BI: De Analista para Analista</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8F9FA; color: #1F2937; }
+        .tab-active { border-bottom: 2px solid #F59E0B; color: #F59E0B; font-weight: 600; }
+        .tab-inactive { color: #6B7280; }
+        .tab-inactive:hover { color: #F59E0B; }
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        
+        /* Chart Container Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        /* Custom Star Schema CSS Visualization */
+        .schema-container { display: flex; justify-content: center; align-items: center; position: relative; height: 300px; }
+        .fact-table { z-index: 10; background: #FDE68A; border: 2px solid #D97706; padding: 1rem; border-radius: 8px; text-align: center; font-weight: bold; width: 120px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; }
+        .fact-table:hover { transform: scale(1.05); }
+        .dim-table { position: absolute; background: #DBEAFE; border: 2px solid #2563EB; padding: 0.5rem; border-radius: 6px; text-align: center; font-size: 0.875rem; width: 100px; cursor: pointer; transition: all 0.2s; }
+        .dim-table:hover { background: #BFDBFE; }
+        .dim-top { top: 20px; }
+        .dim-right { right: 20px; }
+        .dim-bottom { bottom: 20px; }
+        .dim-left { left: 20px; }
+        .connector { position: absolute; background: #9CA3AF; z-index: 1; }
+        .conn-vert { width: 2px; height: 100px; }
+        .conn-horz { height: 2px; width: 100px; }
+
+        /* Smooth fade for content changes */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+    <!-- Chosen Palette: Warm Neutral (Slate/Gray) with Amber/Orange Accents for Power BI branding feel -->
+    <!-- Application Structure Plan: Dashboard style. Includes a "File Generator" engine in JS to create CSVs on the fly, solving the broken link issue permanently. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-gray-800 tracking-tight">Power BI <span class="text-yellow-500">Essential</span></span>
+                    <span class="ml-4 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hidden sm:block">Curso para Analistas de Negócio</span>
+                </div>
+                <div class="text-sm text-gray-500">Plano de Ensino: 4 Aulas</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Sidebar / Navigation -->
+        <aside class="lg:col-span-3 space-y-6">
+            
+            <!-- Navigation Menu -->
+            <nav class="bg-white rounded-lg card-shadow p-4">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Módulos do Curso</h3>
+                <ul class="space-y-2">
+                    <li>
+                        <button onclick="loadClass(1)" id="nav-btn-1" class="w-full text-left px-4 py-2 rounded-md text-sm font-medium transition-colors bg-yellow-50 text-yellow-700 border-l-4 border-yellow-500">
+                            Aula 1: Fundamentos & ETL
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="loadClass(2)" id="nav-btn-2" class="w-full text-left px-4 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                            Aula 2: Modelagem de Dados
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="loadClass(3)" id="nav-btn-3" class="w-full text-left px-4 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                            Aula 3: Visualização & Design
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="loadClass(4)" id="nav-btn-4" class="w-full text-left px-4 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                            Aula 4: Publicação & Serviço
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Skill Matrix Chart -->
+            <div class="bg-white rounded-lg card-shadow p-4">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Competências Alvo</h3>
+                <div class="chart-container h-64">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+                <p class="text-xs text-gray-500 mt-2 text-center">Foco em autonomia para análise de negócios.</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section class="lg:col-span-9 space-y-6">
+            
+            <!-- Dynamic Class Header -->
+            <div id="class-header" class="bg-white rounded-lg card-shadow p-6 border-l-4 border-yellow-500 fade-in">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h1 id="class-title" class="text-2xl font-bold text-gray-900">Aula 1: Introdução e ETL (Power Query)</h1>
+                        <p id="class-subtitle" class="mt-2 text-gray-600">O primeiro passo: conectando e limpando dados brutos.</p>
+                    </div>
+                    <span id="class-duration" class="px-3 py-1 bg-gray-100 rounded text-sm font-semibold text-gray-600">2 Horas</span>
+                </div>
+            </div>
+
+            <!-- Tabs for Content View -->
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button onclick="switchContentTab('plan')" id="tab-plan" class="tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        Plano de Aula
+                    </button>
+                    <button onclick="switchContentTab('concept')" id="tab-concept" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        Conceito Chave
+                    </button>
+                    <button onclick="switchContentTab('cases')" id="tab-cases" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        Exercícios & Bases
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Tab Content: Lesson Plan -->
+            <div id="content-plan" class="bg-white rounded-lg card-shadow p-6 fade-in block">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Roteiro Detalhado</h2>
+                <div class="space-y-6 relative border-l-2 border-gray-200 ml-3 pl-8 pb-4" id="timeline-container">
+                    <!-- Dynamic Timeline Items -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Key Concepts -->
+            <div id="content-concept" class="bg-white rounded-lg card-shadow p-6 fade-in hidden">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Conceito Interativo: <span id="concept-title">O Processo ETL</span></h2>
+                <p id="concept-desc" class="text-gray-600 mb-6">Entenda visualmente como os dados fluem.</p>
+                
+                <!-- Dynamic Interactive Visual Container -->
+                <div id="interactive-visual" class="bg-gray-50 rounded border border-gray-200 p-8 flex justify-center items-center min-h-[350px]">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Cases (Homework) -->
+            <div id="content-cases" class="bg-white rounded-lg card-shadow p-6 fade-in hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-semibold text-gray-800">Tarefas e Datasets</h2>
+                    <div class="flex space-x-2">
+                        <button onclick="loadCase(0)" class="px-3 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition-colors border border-gray-300">Case A</button>
+                        <button onclick="loadCase(1)" class="px-3 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition-colors border border-gray-300">Case B</button>
+                        <button onclick="loadCase(2)" class="px-3 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition-colors border border-gray-300">Case C</button>
+                    </div>
+                </div>
+
+                <div id="case-detail" class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 id="case-title" class="text-xl font-bold text-gray-900">Carregando...</h3>
+                        <span id="case-difficulty" class="px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">Fácil</span>
+                    </div>
+                    <span id="case-focus" class="inline-block mb-4 px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-blue-800">Tratamento de Dados</span>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Left: Scenario -->
+                        <div class="prose prose-sm text-gray-600 max-w-none">
+                            <h4 class="font-bold text-gray-800">Cenário</h4>
+                            <p id="case-scenario" class="mb-4">Descrição do cenário...</p>
+
+                            <h4 class="font-bold text-gray-800 mt-4">Entregáveis Esperados</h4>
+                            <ul id="case-deliverables" class="list-disc pl-5 space-y-1">
+                                <li>Item 1</li>
+                            </ul>
+                        </div>
+
+                        <!-- Right: Downloads -->
+                        <div class="bg-white p-4 rounded border border-gray-200 shadow-sm">
+                            <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                                <span>📂 Arquivos da Aula</span>
+                                <span class="ml-2 text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">Gerados Localmente</span>
+                            </h4>
+                            <p class="text-xs text-gray-500 mb-4">Clique abaixo para baixar os arquivos CSV/Excel necessários para este exercício. Estes arquivos são gerados instantaneamente pelo navegador.</p>
+                            
+                            <div id="file-downloads-container" class="space-y-3">
+                                <!-- Buttons injected via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-auto py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">Plano de Curso Power BI • Arquivos Gerados Automaticamente para Garantia de Acesso</p>
+        </div>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // --- HELPER: FILE GENERATOR ---
+        function downloadFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // --- DATA STORE ---
+        const courseData = {
+            1: {
+                title: "Aula 1: Introdução e ETL (Power Query)",
+                subtitle: "Conectando e transformando dados brutos em informações úteis.",
+                timeline: [
+                    { time: "00:00 - 00:30", title: "Introdução ao BI e Interface", desc: "O que é BI? Power BI Desktop vs Service. Tour pela interface (Faixa de Opções, Painéis)." },
+                    { time: "00:30 - 01:15", title: "Power Query: O Coração (ETL)", desc: "Extração (Excel, CSV, Web). Transformação: Tipos de dados, Promover cabeçalhos, Remover linhas, Substituir valores." },
+                    { time: "01:15 - 01:45", title: "Tratamento Avançado", desc: "Coluna condicional, Coluna de exemplo, Unpivot (Transformar colunas em linhas), Tratamento de erros." },
+                    { time: "01:45 - 02:00", title: "Carregamento e Prática", desc: "Aplicar e Fechar. Verificação dos dados no 'Data View'. Dúvidas." }
+                ],
+                concept: { title: "O Fluxo ETL", type: "etl", desc: "Extração (Extract), Transformação (Transform) e Carga (Load). A base de qualquer projeto de dados." },
+                cases: [
+                    {
+                        title: "Case A: Limpeza de Vendas Desestruturadas",
+                        difficulty: "Iniciante",
+                        focus: "Limpeza Básica",
+                        scenario: "Você recebeu um arquivo de vendas exportado de um sistema antigo. O problema é que o arquivo contém linhas vazias no topo, metadados inúteis antes do cabeçalho real, e a data está formatada como texto.",
+                        deliverables: ["Remover as primeiras 3 linhas (lixo)", "Promover a primeira linha como cabeçalho", "Filtrar/Remover linhas nulas", "Converter coluna 'Valor' para Decimal Fixo"],
+                        files: [
+                            {
+                                name: "Vendas_Jan_Sujo.csv",
+                                content: `Relatório gerado pelo Sistema v1.0
+Usuario: Admin
+Data: 01/01/2023
+
+Data;Produto;Vendedor;Valor_Venda
+01/01/2023;Notebook Dell;João Silva;4500
+02/01/2023;Mouse Logitech;Maria Souza;50
+; ; ;
+03/01/2023;Teclado Mecânico;João Silva;350
+04/01/2023;Monitor 24;Pedro Santos;1200
+; ; ;
+05/01/2023;Cabo HDMI;Maria Souza;25`
+                            }
+                        ]
+                    },
+                    {
+                        title: "Case B: Unificação de Arquivos (Append)",
+                        difficulty: "Intermediário",
+                        focus: "Append (Acrescentar)",
+                        scenario: "O departamento financeiro salva as vendas em arquivos mensais separados. Para analisar o trimestre, você precisa juntar todos em uma única tabela no Power BI.",
+                        deliverables: ["Importar os 3 arquivos CSV individualmente", "Usar a função 'Acrescentar Consultas' (Append)", "Verificar se o total de linhas bate com a soma dos arquivos"],
+                        files: [
+                            { name: "Vendas_Jan.csv", content: "Data,Produto,Valor\n2023-01-10,Produto A,100\n2023-01-15,Produto B,200" },
+                            { name: "Vendas_Fev.csv", content: "Data,Produto,Valor\n2023-02-05,Produto A,110\n2023-02-20,Produto C,300" },
+                            { name: "Vendas_Mar.csv", content: "Data,Produto,Valor\n2023-03-01,Produto B,210\n2023-03-12,Produto A,105" }
+                        ]
+                    },
+                    {
+                        title: "Case C: Normalização (Unpivot)",
+                        difficulty: "Desafiador",
+                        focus: "Unpivot (Desdinamizar)",
+                        scenario: "O RH enviou uma pesquisa de clima onde cada mês é uma coluna diferente. Esse formato 'largo' (wide) impede a criação de gráficos de evolução temporal corretos.",
+                        deliverables: ["Importar a tabela", "Selecionar colunas Jan a Jun", "Aplicar 'Desdinamizar Colunas' (Unpivot)", "Renomear colunas para 'Mês' e 'Nota'"],
+                        files: [
+                            {
+                                name: "Pesquisa_Clima_RH.csv",
+                                content: `Funcionario,Departamento,Jan,Fev,Mar,Abr,Mai,Jun
+Carlos Silva,TI,8,9,7,8,9,8
+Ana Costa,RH,10,10,9,10,10,10
+Pedro Lima,Vendas,5,6,5,4,5,6
+Julia Dias,Marketing,9,9,8,9,8,9`
+                            }
+                        ]
+                    }
+                ]
+            },
+            2: {
+                title: "Aula 2: Modelagem de Dados",
+                subtitle: "O segredo da performance: Relacionamentos e Star Schema.",
+                timeline: [
+                    { time: "00:00 - 00:40", title: "Conceito de Modelagem", desc: "Tabelas Fato vs Tabelas Dimensão. O Star Schema. Por que não usar tabelão único?" },
+                    { time: "00:40 - 01:10", title: "Relacionamentos", desc: "Cardinalidade (1:*, *:1). Direção do filtro. Criando relacionamentos manuais arrastando campos." },
+                    { time: "01:10 - 01:40", title: "Introdução ao DAX", desc: "Medidas vs Colunas Calculadas. Funções básicas: SUM, AVERAGE, COUNTROWS, RELATED." },
+                    { time: "01:40 - 02:00", title: "Tabela Calendário", desc: "Importância de uma dCalendar. Criando uma tabela calendário simples com DAX." }
+                ],
+                concept: { title: "Star Schema (Esquema Estrela)", type: "star", desc: "O modelo ideal para Power BI: Uma tabela Fato central (eventos) cercada por tabelas Dimensão (contexto)." },
+                cases: [
+                    {
+                        title: "Case A: Construindo o Star Schema",
+                        difficulty: "Essencial",
+                        focus: "Modelagem & Relacionamento",
+                        scenario: "Você tem vendas registradas apenas com IDs. Para saber o nome do produto ou do cliente, você precisa conectar as tabelas dimensão.",
+                        deliverables: ["Carregar as 3 tabelas", "Modelar: Ligar ID_Produto (Fato) com ID_Produto (Dimensão)", "Modelar: Ligar ID_Cliente (Fato) com ID_Cliente (Dimensão)", "Criar matriz: Nome Cliente x Nome Produto"],
+                        files: [
+                            { name: "fVendas.csv", content: "ID_Venda,Data,ID_Produto,ID_Cliente,Qtd\n1,2023-01-01,101,500,2\n2,2023-01-02,102,501,1\n3,2023-01-02,101,502,5" },
+                            { name: "dProdutos.csv", content: "ID_Produto,Nome_Produto,Categoria,Preco_Unitario\n101,Mouse,Periféricos,50\n102,Teclado,Periféricos,150\n103,Monitor,Telas,800" },
+                            { name: "dClientes.csv", content: "ID_Cliente,Nome_Cliente,Cidade,Estado\n500,Empresa A,São Paulo,SP\n501,Empresa B,Rio de Janeiro,RJ\n502,Empresa C,Curitiba,PR" }
+                        ]
+                    },
+                    {
+                        title: "Case B: DAX Básico e Medidas",
+                        difficulty: "Intermediário",
+                        focus: "Medidas DAX",
+                        scenario: "O relatório precisa de cálculos que não existem na base. Precisamos calcular o Faturamento Total (Qtd * Preço) e a Média de vendas.",
+                        deliverables: ["Criar Medida: Faturamento = SUMX(fVendas, fVendas[Qtd] * RELATED(dProdutos[Preco_Unitario]))", "Criar Medida: Total Vendas = COUNTROWS(fVendas)", "Criar Medida: Ticket Médio = [Faturamento] / [Total Vendas]"],
+                        files: [
+                            { name: "Base_Completa_Aula2.csv", content: "Utilize os arquivos do Case A acima." } // Reuses previous logic description in UI
+                        ]
+                    },
+                    {
+                        title: "Case C: Inteligência de Tempo",
+                        difficulty: "Avançado",
+                        focus: "dCalendario & CALCULATE",
+                        scenario: "Precisamos comparar as vendas deste mês com o mês anterior (MoM). Para isso, é obrigatório ter uma tabela calendário.",
+                        deliverables: ["Criar dCalendario via DAX: CALENDARAUTO()", "Relacionar dCalendario[Date] com fVendas[Data]", "Criar Medida: Vendas Mes Anterior = CALCULATE([Faturamento], PREVIOUSMONTH(dCalendario[Date]))"],
+                        files: [
+                            { name: "fVendas_Historico.csv", content: "Data,Valor\n2023-01-15,1000\n2023-02-15,1200\n2023-03-15,1500\n2023-04-15,1100" }
+                        ]
+                    }
+                ]
+            },
+            3: {
+                title: "Aula 3: Visualização & Storytelling",
+                subtitle: "Transformando números em insights visuais impactantes.",
+                timeline: [
+                    { time: "00:00 - 00:30", title: "Princípios de Visualização", desc: "Qual gráfico usar? (Barra vs Linha vs Pizza). Cores e contraste. O conceito 'Z-Pattern' de leitura." },
+                    { time: "00:30 - 01:15", title: "Visuais Nativos e Formatação", desc: "Cartões, Matrizes, Gráficos de Barras, Mapas. Formatação condicional (ícones, barras de dados, cor de fundo)." },
+                    { time: "01:15 - 01:45", title: "Interatividade Avançada", desc: "Filtros (Slicers) vs Painel de Filtros. Edit Interactions (quem filtra quem). Drill-down e Tooltips." },
+                    { time: "01:45 - 02:00", title: "Design e Layout", desc: "Inserir formas, imagens e botões para navegação. Temas JSON. Alinhamento e distribuição." }
+                ],
+                concept: { title: "Escolha do Gráfico", type: "viz", desc: "A escolha errada pode mentir com dados. Aprenda a categorizar: Comparação, Evolução, Composição ou Distribuição." },
+                cases: [
+                    {
+                        title: "Case A: O Dashboard Executivo",
+                        difficulty: "Intermediário",
+                        focus: "KPIs e Layout",
+                        scenario: "Use o dataset consolidado abaixo (já tratado) para criar uma tela executiva. O foco é clareza e resposta rápida.",
+                        deliverables: ["3 Cartões no topo: Total Vendas, Qtd Vendida, Total Clientes", "1 Gráfico de Linha: Vendas por Mês", "1 Gráfico de Barras: Top 5 Produtos", "Segmentação de Dados: Ano e Estado"],
+                        files: [
+                            { name: "Dataset_Tratado_Consolidado.csv", content: "Data,Produto,Categoria,Cliente,Estado,Valor_Venda\n2023-01-05,Mouse,Periféricos,Empresa A,SP,150\n2023-01-10,Teclado,Periféricos,Empresa B,RJ,300\n2023-02-15,Monitor,Telas,Empresa A,SP,1200\n2023-03-20,Notebook,Computadores,Empresa C,PR,4500\n2023-03-22,Mouse,Periféricos,Empresa A,SP,150" }
+                        ]
+                    },
+                    {
+                        title: "Case B: Formatação Condicional",
+                        difficulty: "Fácil",
+                        focus: "Tabelas e Matrizes",
+                        scenario: "O analista operacional precisa ver linha a linha, mas quer indicadores visuais para identificar problemas rapidamente.",
+                        deliverables: ["Criar Matriz: Estado (Linha) > Cidade (Linha) e Valor (Valor)", "Adicionar Barra de Dados na coluna de valor", "Adicionar ícone vermelho se Valor < 500"],
+                        files: [
+                            { name: "Dataset_Operacional.csv", content: "Utilize o Dataset_Tratado_Consolidado.csv do Case A." }
+                        ]
+                    },
+                    {
+                        title: "Case C: Tooltips Personalizados",
+                        difficulty: "Avançado",
+                        focus: "Experiência de Usuário",
+                        scenario: "O mapa mostra as vendas por estado, mas o gerente quer passar o mouse em cima de 'SP' e ver quais produtos foram vendidos lá, sem clicar.",
+                        deliverables: ["Criar página de Tooltip", "Inserir gráfico de barras (Produtos) nessa página", "Configurar o Mapa principal para usar essa página como Dica de Ferramenta"],
+                        files: [
+                            { name: "Dataset_Mapa.csv", content: "Utilize o Dataset_Tratado_Consolidado.csv do Case A." }
+                        ]
+                    }
+                ]
+            },
+            4: {
+                title: "Aula 4: Publicação & Serviço (Online)",
+                subtitle: "Compartilhando seu trabalho com segurança e automação.",
+                timeline: [
+                    { time: "00:00 - 00:30", title: "Power BI Serviço", desc: "Workspaces (Pessoal vs Compartilhado). Publicando o relatório. Navegação no portal online." },
+                    { time: "00:30 - 01:00", title: "Dashboards vs Relatórios", desc: "A diferença técnica no Serviço. Fixando visuais (Pinning). Alertas de dados." },
+                    { time: "01:00 - 01:30", title: "Atualização de Dados", desc: "Gateway (noções básicas). Agendamento de atualização (Scheduled Refresh). Credenciais." },
+                    { time: "01:30 - 02:00", title: "Segurança e Compartilhamento", desc: "RLS (Row Level Security) básico. Compartilhar link vs App. Exportar para PDF/PPT." }
+                ],
+                concept: { title: "Fluxo de Publicação", type: "publish", desc: "Do Desktop local para a Nuvem, e da Nuvem para o decisor final." },
+                cases: [
+                    {
+                        title: "Case A: Layout Mobile",
+                        difficulty: "Fácil",
+                        focus: "Mobile View",
+                        scenario: "O diretor acessa os relatórios via celular. O layout padrão do Desktop fica ilegível em telas verticais.",
+                        deliverables: ["Acessar menu Exibição > Layout Móvel", "Arrastar apenas os cartões principais e 1 gráfico", "Publicar e simular visualização"],
+                        files: [
+                            { name: "Projeto_Final.csv", content: "Data,KPI,Valor\n2023-01-01,Faturamento,50000\n2023-01-01,Lucro,12000\n2023-01-02,Faturamento,52000" }
+                        ]
+                    },
+                    {
+                        title: "Case B: Segurança (RLS)",
+                        difficulty: "Avançado",
+                        focus: "RLS (Row Level Security)",
+                        scenario: "Você tem um relatório único, mas o Gerente de SP só pode ver dados de SP e o do RJ só pode ver RJ.",
+                        deliverables: ["No Desktop: Modelagem > Gerenciar Funções", "Criar regra DAX: [Estado] = 'SP'", "Testar como função", "Explicar configuração no Serviço"],
+                        files: [
+                            { name: "Vendas_Nacional.csv", content: "Gerente,Estado,Vendas\nJoão,SP,5000\nMaria,RJ,4000\nPedro,MG,3000\nJoão,SP,2000" }
+                        ]
+                    },
+                    {
+                        title: "Case C: Alertas de Dados",
+                        difficulty: "Fácil",
+                        focus: "Alertas no Serviço",
+                        scenario: "Queremos ser avisados por e-mail automaticamente se as vendas caírem abaixo de um patamar crítico.",
+                        deliverables: ["Publicar relatório", "Criar Dashboard (Painel)", "Fixar cartão", "Gerenciar Alertas: Se valor < 1000 enviar email"],
+                        files: [
+                            { name: "Dados_Alertas.csv", content: "Data,Venda_Diaria\n01/01,1500\n02/01,800\n03/01,1200" }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // --- CHART JS SETUP ---
+        let skillsChartInstance = null;
+
+        function initChart() {
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            skillsChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['ETL / Dados', 'Modelagem', 'DAX', 'Design / Visual', 'Storytelling', 'Publicação'],
+                    datasets: [{
+                        label: 'Nível Alvo do Aluno',
+                        data: [20, 20, 10, 20, 10, 10], 
+                        fill: true,
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                        borderColor: 'rgb(245, 158, 11)',
+                        pointBackgroundColor: 'rgb(245, 158, 11)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(245, 158, 11)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    elements: { line: { tension: 0.3 } },
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // --- DOM MANIPULATION ---
+
+        let currentClassId = 1;
+        let currentCaseIndex = 0;
+
+        function loadClass(classId) {
+            currentClassId = classId;
+            const data = courseData[classId];
+
+            // Update Active Nav Style
+            document.querySelectorAll('nav button[id^="nav-btn-"]').forEach(btn => {
+                btn.classList.remove('bg-yellow-50', 'text-yellow-700', 'border-l-4', 'border-yellow-500');
+                btn.classList.add('text-gray-600', 'hover:bg-gray-50');
+            });
+            const activeBtn = document.getElementById(`nav-btn-${classId}`);
+            activeBtn.classList.remove('text-gray-600', 'hover:bg-gray-50');
+            activeBtn.classList.add('bg-yellow-50', 'text-yellow-700', 'border-l-4', 'border-yellow-500');
+
+            // Update Header
+            document.getElementById('class-title').innerText = data.title;
+            document.getElementById('class-subtitle').innerText = data.subtitle;
+
+            // Update Timeline (Plan)
+            const timelineContainer = document.getElementById('timeline-container');
+            timelineContainer.innerHTML = '';
+            data.timeline.forEach(item => {
+                timelineContainer.innerHTML += `
+                    <div class="relative mb-6">
+                        <div class="absolute -left-10 mt-1.5 h-4 w-4 rounded-full border-2 border-yellow-500 bg-white"></div>
+                        <time class="mb-1 text-sm font-normal leading-none text-gray-400">${item.time}</time>
+                        <h3 class="text-base font-semibold text-gray-900">${item.title}</h3>
+                        <p class="mb-4 text-sm font-normal text-gray-500">${item.desc}</p>
+                    </div>
+                `;
+            });
+
+            // Update Concept
+            document.getElementById('concept-title').innerText = data.concept.title;
+            document.getElementById('concept-desc').innerText = data.concept.desc;
+            renderConceptVisual(data.concept.type);
+
+            // Update Cases
+            loadCase(0);
+            
+            // Update Chart
+            updateChartForClass(classId);
+
+            // Reset tab
+            switchContentTab('plan');
+        }
+
+        function loadCase(index) {
+            currentCaseIndex = index;
+            const caseData = courseData[currentClassId].cases[index];
+
+            document.getElementById('case-title').innerText = caseData.title;
+            document.getElementById('case-difficulty').innerText = caseData.difficulty;
+            document.getElementById('case-focus').innerText = caseData.focus;
+            document.getElementById('case-scenario').innerText = caseData.scenario;
+            
+            const delivList = document.getElementById('case-deliverables');
+            delivList.innerHTML = '';
+            caseData.deliverables.forEach(item => {
+                delivList.innerHTML += `<li>${item}</li>`;
+            });
+
+            // GENERATE DOWNLOAD BUTTONS
+            const filesContainer = document.getElementById('file-downloads-container');
+            filesContainer.innerHTML = '';
+            
+            if (caseData.files && caseData.files.length > 0) {
+                caseData.files.forEach(file => {
+                    // Check if content is a reference string or actual content
+                    if (file.content.startsWith("Utilize")) {
+                        filesContainer.innerHTML += `
+                            <div class="p-3 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600 italic">
+                                ${file.content}
+                            </div>
+                        `;
+                    } else {
+                        // Create button with embedded data
+                        const btn = document.createElement('button');
+                        btn.className = "w-full flex items-center justify-between px-4 py-2 bg-white hover:bg-yellow-50 border border-gray-300 hover:border-yellow-400 rounded transition-all group";
+                        btn.innerHTML = `
+                            <div class="flex items-center">
+                                <span class="text-xl mr-3 group-hover:scale-110 transition-transform">📄</span>
+                                <div class="text-left">
+                                    <div class="text-sm font-semibold text-gray-700 group-hover:text-yellow-700">${file.name}</div>
+                                    <div class="text-[10px] text-gray-400">CSV • Clique para baixar</div>
+                                </div>
+                            </div>
+                            <span class="text-gray-400 group-hover:text-yellow-600">⬇️</span>
+                        `;
+                        // Attach click event dynamically to avoid quote escaping issues
+                        btn.onclick = function() {
+                            downloadFile(file.name, file.content);
+                        };
+                        filesContainer.appendChild(btn);
+                    }
+                });
+            } else {
+                 filesContainer.innerHTML = `<div class="text-xs text-gray-400 italic">Nenhum arquivo necessário para este case.</div>`;
+            }
+        }
+
+        function switchContentTab(tabName) {
+            ['plan', 'concept', 'cases'].forEach(t => {
+                document.getElementById(`content-${t}`).classList.add('hidden');
+                document.getElementById(`content-${t}`).classList.remove('block');
+                const tabBtn = document.getElementById(`tab-${t}`);
+                tabBtn.classList.remove('tab-active');
+                tabBtn.classList.add('tab-inactive', 'border-transparent');
+            });
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            document.getElementById(`content-${tabName}`).classList.add('block');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.remove('tab-inactive', 'border-transparent');
+            activeBtn.classList.add('tab-active');
+        }
+
+        function updateChartForClass(id) {
+            let data = [0,0,0,0,0,0];
+            if (id >= 1) { data[0] += 80; data[1] += 20; }
+            if (id >= 2) { data[1] += 70; data[2] += 60; }
+            if (id >= 3) { data[3] += 90; data[4] += 70; }
+            if (id >= 4) { data[5] += 90; }
+            skillsChartInstance.data.datasets[0].data = data;
+            skillsChartInstance.update();
+        }
+
+        function renderConceptVisual(type) {
+            const container = document.getElementById('interactive-visual');
+            container.innerHTML = ''; 
+
+            if (type === 'star') {
+                container.innerHTML = `
+                    <div class="schema-container w-full">
+                        <div class="dim-table dim-top" title="Dimensão Tempo">dCalendario</div>
+                        <div class="dim-table dim-left" title="Dimensão Produto">dProduto</div>
+                        <div class="connector conn-vert" style="top: 50px;"></div>
+                        <div class="connector conn-horz" style="left: 120px;"></div>
+                        <div class="fact-table" title="Tabela Fato: Contém números">fVendas</div>
+                        <div class="connector conn-horz" style="right: 120px;"></div>
+                        <div class="connector conn-vert" style="bottom: 50px;"></div>
+                        <div class="dim-table dim-right" title="Dimensão Cliente">dCliente</div>
+                        <div class="dim-table dim-bottom" title="Dimensão Loja">dLoja</div>
+                    </div>`;
+            } else if (type === 'etl') {
+                container.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="p-4 bg-red-100 rounded text-center border border-red-300 w-24"><div class="text-2xl mb-1">📂</div><div class="font-bold text-xs text-red-800">Origem</div></div>
+                        <div class="text-gray-400 font-bold text-xl">→</div>
+                        <div class="p-4 bg-yellow-100 rounded text-center border border-yellow-300 w-32 shadow-lg scale-110"><div class="text-2xl mb-1">⚙️</div><div class="font-bold text-xs text-yellow-800">Power Query</div></div>
+                        <div class="text-gray-400 font-bold text-xl">→</div>
+                        <div class="p-4 bg-blue-100 rounded text-center border border-blue-300 w-24"><div class="text-2xl mb-1">📊</div><div class="font-bold text-xs text-blue-800">Power BI</div></div>
+                    </div>`;
+            } else if (type === 'viz') {
+                 container.innerHTML = `
+                    <div class="grid grid-cols-2 gap-4 w-full max-w-md">
+                        <div class="p-3 bg-white border rounded text-center hover:bg-gray-50"><p class="text-xs font-bold">📊 Comparação</p></div>
+                        <div class="p-3 bg-white border rounded text-center hover:bg-gray-50"><p class="text-xs font-bold">📈 Evolução</p></div>
+                        <div class="p-3 bg-white border rounded text-center hover:bg-gray-50"><p class="text-xs font-bold">🍰 Composição</p></div>
+                        <div class="p-3 bg-white border rounded text-center hover:bg-gray-50"><p class="text-xs font-bold">📍 Distribuição</p></div>
+                    </div>`;
+            } else {
+                 container.innerHTML = `<div class="p-4 bg-gray-100 rounded text-gray-500 italic">Visualização do fluxo de publicação.</div>`;
+            }
+        }
+
+        window.onload = function() {
+            initChart();
+            loadClass(1);
+        };
+    </script>
+</body>
+</html>
